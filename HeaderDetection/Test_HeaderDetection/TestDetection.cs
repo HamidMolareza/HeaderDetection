@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using HeaderDetection;
 using HeaderDetection.Models;
 using Xunit;
@@ -42,7 +43,7 @@ namespace Test_HeaderDetection
                     new(nameof(SimpleModel.Decimal), 1, 1, 0, null),
                 });
 
-            Assert.True(Equals(result, expected));
+            Assert.True(expected.Equals(result));
         }
         
         [Fact]
@@ -74,16 +75,27 @@ namespace Test_HeaderDetection
                         }),
                 });
 
-            Assert.True(Equals(result, expected));
+            Assert.True(expected.Equals(result));
         }
         
         [Fact]
         public void DetectHeader_RecursiveModel_ThrowArgumentException()
         {
-           Assert.Throws<ArgumentException>(() => Detection.DetectHeader(typeof(RecursiveModel)));
+            Assert.Throws<ArgumentException>(() => Detection.DetectHeader(typeof(RecursiveModel)));
         }
         
-        //TODO: Single property like int
+        [Fact]
+        public void DetectHeader_DisplayNameModel_ReturnDisplayName()
+        {
+            var result = Detection.DetectHeader(typeof(DisplayNameModel));
+            var expected = new ModelStructure("main", 1, 0, 1,
+                new List<ModelStructure>
+                {
+                    new("Inner Property", 1, 1, 0, null)
+                });
+            
+            Assert.True(expected.Equals(result));
+        }
     }
 
     public class SimpleModel
@@ -130,5 +142,12 @@ namespace Test_HeaderDetection
     {
         public string Id { get; set; }
         public RecursiveModel InnerModel { get; set; }
+    }
+
+    [DisplayName("main")]
+    public class DisplayNameModel
+    {
+        [DisplayName("Inner Property")]
+        public string Property { get; set; }
     }
 }
