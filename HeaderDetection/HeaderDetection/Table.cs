@@ -22,6 +22,12 @@ namespace HeaderDetection
             ModelStructure = Detection.DetectHeader(typeof(T));
         }
         
+        public Table(List<T> items)
+        {
+            Items = items;
+            ModelStructure = Detection.DetectHeader(typeof(T));
+        }
+        
         public Table(List<T> items, ModelStructure modelStructure)
         {
             Items = items;
