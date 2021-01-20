@@ -40,7 +40,31 @@ namespace HeaderDetection
                 throw new ArgumentException(
                     $"Value can not less than 0 or more than {ModelStructure.MaximumInnerDepth}. (input: {rowIndex}");
 
-            throw new Exception();
+            if (rowIndex == 0)
+                yield return ModelStructure;
+            
+            foreach (var model in GetHeader(rowIndex, ModelStructure.InnerProperties!))
+                yield return model;
+        }
+
+        private IEnumerable<ModelStructure> GetHeader(int rowIndex, List<ModelStructure> modelStructures)
+        {
+            foreach (var modelStructure in modelStructures)
+            {
+                if (modelStructure.CurrentDepth == rowIndex)
+                    yield return modelStructure;
+                else
+                {
+                    if (modelStructure.CurrentDepth > rowIndex)
+                        continue;
+
+                    if (modelStructure.InnerProperties is null)
+                        continue;
+
+                    foreach (var model in GetHeader(rowIndex, modelStructure.InnerProperties))
+                        yield return model;
+                }
+            }
         }
 
         public IEnumerable<Item> GetItems(int rowIndex)
