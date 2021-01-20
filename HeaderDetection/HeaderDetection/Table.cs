@@ -42,12 +42,12 @@ namespace HeaderDetection
 
             if (rowIndex == 0)
                 yield return ModelStructure;
-            
+
             foreach (var model in GetHeader(rowIndex, ModelStructure.InnerProperties!))
                 yield return model;
         }
 
-        private IEnumerable<ModelStructure> GetHeader(int rowIndex, List<ModelStructure> modelStructures)
+        private IEnumerable<ModelStructure> GetHeader(int rowIndex, IEnumerable<ModelStructure> modelStructures)
         {
             foreach (var modelStructure in modelStructures)
             {
@@ -73,7 +73,34 @@ namespace HeaderDetection
                 throw new ArgumentException(
                     $"Value can not less than 0 or more than {Items.Count - 1}. (input: {rowIndex}");
 
-            throw new Exception();
+            var rowItem = Items[rowIndex];
+            if (ModelStructure.MaximumInnerDepth == 0)
+                yield return new Item(ModelStructure.DisplayName, rowItem, ModelStructure.Type);
+
+            foreach (var item in GetItems(rowItem!, ModelStructure.InnerProperties!))
+                yield return item;
+        }
+
+        private IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
+        {
+            foreach (var modelStructure in modelStructures)
+            {
+                object? propertyValue = null;
+                if (value is not null)
+                    propertyValue = value.GetType().GetProperty(modelStructure.DisplayName)!.GetValue(value);
+
+                if (modelStructure.InnerProperties is null)
+                {
+                    yield return new Item(modelStructure.DisplayName, propertyValue, modelStructure.Type);
+                }
+                else
+                {
+                    foreach (var item in GetItems(propertyValue, modelStructure.InnerProperties))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
     }
 }

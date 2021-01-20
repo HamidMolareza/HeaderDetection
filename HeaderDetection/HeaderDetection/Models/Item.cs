@@ -4,12 +4,14 @@ namespace HeaderDetection.Models
 {
     public class Item
     {
-        public Item(object? value, Type? type)
+        public Item(string name, object? value, Type? type)
         {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             Value = value;
             Type = type;
         }
 
+        public string Name { get; }
         public object? Value { get; }
         public Type? Type { get; }
     }
