@@ -21,13 +21,13 @@ namespace HeaderDetection
             Items = new List<T>();
             ModelStructure = Detection.DetectHeader(typeof(T));
         }
-        
+
         public Table(List<T> items)
         {
             Items = items;
             ModelStructure = Detection.DetectHeader(typeof(T));
         }
-        
+
         public Table(List<T> items, ModelStructure modelStructure)
         {
             Items = items;
@@ -36,11 +36,19 @@ namespace HeaderDetection
 
         public IEnumerable<ModelStructure> GetHeader(int rowIndex)
         {
+            if (rowIndex < 0 || rowIndex > ModelStructure.MaximumInnerDepth)
+                throw new ArgumentException(
+                    $"Value can not less than 0 or more than {ModelStructure.MaximumInnerDepth}. (input: {rowIndex}");
+
             throw new Exception();
         }
 
         public IEnumerable<Item> GetItems(int rowIndex)
         {
+            if (rowIndex < 0 || rowIndex > Items.Count - 1)
+                throw new ArgumentException(
+                    $"Value can not less than 0 or more than {Items.Count - 1}. (input: {rowIndex}");
+
             throw new Exception();
         }
     }

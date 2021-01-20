@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using HeaderDetection.Models;
 using Xunit;
 
-namespace Test_HeaderDetection.Models
+namespace Test_HeaderDetection.TestModels
 {
     public class TestModelStructure
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using HeaderDetection;
 using HeaderDetection.Models;
+using Test_HeaderDetection.Models;
 using Xunit;
 
 namespace Test_HeaderDetection
@@ -108,13 +109,6 @@ namespace Test_HeaderDetection
         }
     }
 
-    public class SimpleModel
-    {
-        public int Integer { get; set; }
-        public string Str { get; set; }
-        public double Decimal { get; set; }
-    }
-    
     public class InvalidSimpleModel
     {
         public int Integer { get; set; }
@@ -122,19 +116,6 @@ namespace Test_HeaderDetection
         public List<double> Decimals { get; set; }
     }
 
-    public class ComplexModel
-    {
-        public Guid Guid { get; set; }
-        public SimpleModel Simple { get; set; }
-        public InnerClass InnerClassObj { get; set; }
-
-        public class InnerClass
-        {
-            public Guid Guid { get; set; }
-            public SimpleModel Simple { get; set; }
-        }
-    }
-    
     public class InvalidComplexModel
     {
         public Guid Guid { get; set; }
