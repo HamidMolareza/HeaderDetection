@@ -44,7 +44,7 @@ namespace HeaderDetection.Models
             obj.CurrentDepth == other.CurrentDepth && obj.MaximumInnerDepth == other.MaximumInnerDepth &&
             Equals(obj.InnerProperties, other.InnerProperties);
 
-        private bool Equals(List<ModelStructure>? @this, List<ModelStructure>? other)
+        private bool Equals(IReadOnlyList<ModelStructure>? @this, IReadOnlyList<ModelStructure>? other)
         {
             if (@this is null && other is null)
                 return true;
