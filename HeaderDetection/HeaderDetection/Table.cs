@@ -33,6 +33,12 @@ namespace HeaderDetection
             Items = items;
             ModelStructure = modelStructure;
         }
+        
+        public T this[int rowIndex]
+        {
+            get => Items[rowIndex];
+            set => Items[rowIndex] = value;
+        }
 
         public IEnumerable<ModelStructure> GetHeader(int rowIndex)
         {
