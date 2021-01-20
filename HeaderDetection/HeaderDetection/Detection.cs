@@ -86,7 +86,7 @@ namespace HeaderDetection
             return (sum, maximumInnerDepth);
         }
 
-        private static bool IsValidType(Type type) => !type.IsArray && !IsList(type);
+        public static bool IsValidType(Type type) => !type.IsArray && !IsList(type);
 
         private static bool IsList(Type type) => type.IsGenericType && (
             type.GetGenericTypeDefinition() == typeof(List<>)

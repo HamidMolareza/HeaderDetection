@@ -96,6 +96,16 @@ namespace Test_HeaderDetection
             
             Assert.True(expected.Equals(result));
         }
+
+        [Fact]
+        public void IsValidType_InvalidTypes_ReturnFalse()
+        {
+            var invalidType1 = new string[1]; //Array
+            var invalidType2 = new List<int>(); //List
+            
+            Assert.False(Detection.IsValidType(invalidType1.GetType()));
+            Assert.False(Detection.IsValidType(invalidType2.GetType()));
+        }
     }
 
     public class SimpleModel
