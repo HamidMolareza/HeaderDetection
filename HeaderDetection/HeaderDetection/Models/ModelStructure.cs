@@ -35,5 +35,37 @@ namespace HeaderDetection.Models
         public int CurrentDepth { get; }
         public int MaximumInnerDepth { get; }
         public List<ModelStructure>? InnerProperties { get; }
+
+        public override bool Equals(object? obj) =>
+            obj is ModelStructure otherObj && Equals(this, otherObj);
+
+        private bool Equals(ModelStructure obj, ModelStructure other) =>
+            obj.DisplayName == other.DisplayName && obj.NumOfColumns == other.NumOfColumns &&
+            obj.CurrentDepth == other.CurrentDepth && obj.MaximumInnerDepth == other.MaximumInnerDepth &&
+            Equals(obj.InnerProperties, other.InnerProperties);
+
+        private bool Equals(List<ModelStructure>? @this, List<ModelStructure>? other)
+        {
+            if (@this is null && other is null)
+                return true;
+            if (@this is null && other is not null)
+                return false;
+            if (@this is not null && other is null)
+                return false;
+            if (@this!.Count != other!.Count)
+                return false;
+            for (var i = 0; i < other.Count; i++)
+            {
+                if (!Equals(@this[i], other[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(DisplayName, NumOfColumns, CurrentDepth, MaximumInnerDepth, InnerProperties);
+        }
     }
 }
