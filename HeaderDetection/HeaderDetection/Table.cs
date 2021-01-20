@@ -53,7 +53,7 @@ namespace HeaderDetection
                 yield return model;
         }
 
-        private IEnumerable<ModelStructure> GetHeader(int rowIndex, IEnumerable<ModelStructure> modelStructures)
+        private static IEnumerable<ModelStructure> GetHeader(int rowIndex, IEnumerable<ModelStructure> modelStructures)
         {
             foreach (var modelStructure in modelStructures)
             {
@@ -87,7 +87,7 @@ namespace HeaderDetection
                 yield return item;
         }
 
-        private IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
+        private static IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
         {
             foreach (var modelStructure in modelStructures)
             {

@@ -29,7 +29,6 @@ namespace HeaderDetection.Models
             MaximumInnerDepth = maximumInnerDepth;
             InnerProperties = innerProperties;
             Type = type ?? throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
-            ;
         }
 
         public string DisplayName { get; }

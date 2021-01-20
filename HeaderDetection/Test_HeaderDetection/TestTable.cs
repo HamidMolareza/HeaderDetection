@@ -78,7 +78,7 @@ namespace Test_HeaderDetection
                         (string) result[1].Value == simpleModel.Str);
             Assert.True(result[2].Name == nameof(SimpleModel.Decimal) &&
                         result[2].Type == typeof(double) &&
-                        (double) result[2].Value == simpleModel.Decimal);
+                        Math.Abs((double) result[2].Value! - simpleModel.Decimal) < 0.001);
         }
 
         [Fact]
