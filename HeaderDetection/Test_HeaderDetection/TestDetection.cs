@@ -76,6 +76,14 @@ namespace Test_HeaderDetection
 
             Assert.True(Equals(result, expected));
         }
+        
+        [Fact]
+        public void DetectHeader_RecursiveModel_ThrowArgumentException()
+        {
+           Assert.Throws<ArgumentException>(() => Detection.DetectHeader(typeof(RecursiveModel)));
+        }
+        
+        //TODO: Single property like int
     }
 
     public class SimpleModel

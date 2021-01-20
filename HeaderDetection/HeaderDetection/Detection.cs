@@ -18,25 +18,32 @@ namespace HeaderDetection
             if (!HasInnerModel(type))
                 return new ModelStructure(name, 1, 0, 0, null);
 
-            var innerStructure = GetHeaderStructures(type, 1).ToList();
+            var outerTypes = new List<Type> {type};
+            var innerStructure = GetHeaderStructures(type, 1, outerTypes).ToList();
             var (numOfColumns, depth) = GetDepthAndColumns(innerStructure);
             return new ModelStructure(name, numOfColumns, 0, depth, innerStructure);
         }
 
-        private static IEnumerable<ModelStructure> GetHeaderStructures(Type type, int depth) =>
-            type.GetProperties().Select(property => GetHeaderStructure(property, depth));
+        private static IEnumerable<ModelStructure> GetHeaderStructures(Type type, int depth, List<Type> outerTypes) =>
+            type.GetProperties().Select(property => GetHeaderStructure(property, depth, outerTypes));
 
-        private static ModelStructure GetHeaderStructure(PropertyInfo property, int currentDepth)
+        private static ModelStructure GetHeaderStructure(PropertyInfo property, int currentDepth, List<Type> outerTypes)
         {
             if (!IsValidType(property.PropertyType))
                 throw new ArgumentException($"Property type is not valid. ({property.Name} - {property.PropertyType})");
+            if (outerTypes.Any(type => type == property.PropertyType))
+                throw new ArgumentException($"Recursive detected. Type: {property.PropertyType.FullName}",
+                    property.Name);
 
             var name = GetPropertyName(property);
             if (!HasInnerModel(property.PropertyType))
                 return new ModelStructure(name, 1, currentDepth, 0, null);
 
-            var innerStructure = GetHeaderStructures(property.PropertyType, currentDepth + 1).ToList();
+            outerTypes.Add(property.PropertyType);
+            var innerStructure = GetHeaderStructures(
+                property.PropertyType, currentDepth + 1, outerTypes).ToList();
             var (numOfColumns, maximumInnerDepth) = GetDepthAndColumns(innerStructure);
+            outerTypes.Remove(property.PropertyType);
             return new ModelStructure(name, numOfColumns, currentDepth, maximumInnerDepth, innerStructure);
         }
 
