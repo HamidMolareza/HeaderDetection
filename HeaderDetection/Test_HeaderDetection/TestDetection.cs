@@ -39,10 +39,10 @@ namespace Test_HeaderDetection
             var expected = new ModelStructure(nameof(SimpleModel), 3, 0, 1,
                 new List<ModelStructure>
                 {
-                    new(nameof(SimpleModel.Integer), 1, 1, 0, null),
-                    new(nameof(SimpleModel.Str), 1, 1, 0, null),
-                    new(nameof(SimpleModel.Decimal), 1, 1, 0, null),
-                });
+                    new(nameof(SimpleModel.Integer), 1, 1, 0, null, typeof(int)),
+                    new(nameof(SimpleModel.Str), 1, 1, 0, null, typeof(string)),
+                    new(nameof(SimpleModel.Decimal), 1, 1, 0, null, typeof(double)),
+                }, typeof(SimpleModel));
 
             Assert.True(expected.Equals(result));
         }
@@ -54,27 +54,27 @@ namespace Test_HeaderDetection
             var expected = new ModelStructure(nameof(ComplexModel), 8, 0, 3,
                 new List<ModelStructure>
                 {
-                    new(nameof(ComplexModel.Guid), 1, 1, 0, null),
+                    new(nameof(ComplexModel.Guid), 1, 1, 0, null, typeof(Guid)),
                     new(nameof(ComplexModel.Simple), 3, 1, 1,
                         new List<ModelStructure>
                         {
-                            new(nameof(SimpleModel.Integer), 1, 2, 0, null),
-                            new(nameof(SimpleModel.Str), 1, 2, 0, null),
-                            new(nameof(SimpleModel.Decimal), 1, 2, 0, null),
-                        }),
+                            new(nameof(SimpleModel.Integer), 1, 2, 0, null, typeof(int)),
+                            new(nameof(SimpleModel.Str), 1, 2, 0, null, typeof(string)),
+                            new(nameof(SimpleModel.Decimal), 1, 2, 0, null, typeof(double)),
+                        }, typeof(SimpleModel)),
                     new(nameof(ComplexModel.InnerClassObj), 4, 1, 2, 
                         new List<ModelStructure>
                         {
-                            new(nameof(ComplexModel.Guid), 1, 2, 0, null),
+                            new(nameof(ComplexModel.Guid), 1, 2, 0, null, typeof(Guid)),
                             new(nameof(ComplexModel.Simple), 3, 2, 1,
                                 new List<ModelStructure>
                                 {
-                                    new(nameof(SimpleModel.Integer), 1, 3, 0, null),
-                                    new(nameof(SimpleModel.Str), 1, 3, 0, null),
-                                    new(nameof(SimpleModel.Decimal), 1, 3, 0, null),
-                                }),
-                        }),
-                });
+                                    new(nameof(SimpleModel.Integer), 1, 3, 0, null, typeof(int)),
+                                    new(nameof(SimpleModel.Str), 1, 3, 0, null, typeof(string)),
+                                    new(nameof(SimpleModel.Decimal), 1, 3, 0, null, typeof(double)),
+                                }, typeof(SimpleModel)),
+                        }, typeof(ComplexModel.InnerClass))
+                }, typeof(ComplexModel));
 
             Assert.True(expected.Equals(result));
         }
@@ -92,8 +92,8 @@ namespace Test_HeaderDetection
             var expected = new ModelStructure("main", 1, 0, 1,
                 new List<ModelStructure>
                 {
-                    new("Inner Property", 1, 1, 0, null)
-                });
+                    new("Inner Property", 1, 1, 0, null, typeof(string))
+                }, typeof(DisplayNameModel));
             
             Assert.True(expected.Equals(result));
         }

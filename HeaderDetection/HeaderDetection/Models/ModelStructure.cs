@@ -7,7 +7,7 @@ namespace HeaderDetection.Models
     public class ModelStructure
     {
         public ModelStructure(string displayName, int numOfColumns, int currentDepth, int maximumInnerDepth,
-            List<ModelStructure>? innerProperties)
+            List<ModelStructure>? innerProperties, Type type)
         {
             if (string.IsNullOrWhiteSpace(displayName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
@@ -28,12 +28,15 @@ namespace HeaderDetection.Models
             CurrentDepth = currentDepth;
             MaximumInnerDepth = maximumInnerDepth;
             InnerProperties = innerProperties;
+            Type = type ?? throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
+            ;
         }
 
         public string DisplayName { get; }
         public int NumOfColumns { get; }
         public int CurrentDepth { get; }
         public int MaximumInnerDepth { get; }
+        public Type Type { get; }
         public List<ModelStructure>? InnerProperties { get; }
 
         public override bool Equals(object? obj) =>
@@ -42,7 +45,7 @@ namespace HeaderDetection.Models
         private bool Equals(ModelStructure obj, ModelStructure other) =>
             obj.DisplayName == other.DisplayName && obj.NumOfColumns == other.NumOfColumns &&
             obj.CurrentDepth == other.CurrentDepth && obj.MaximumInnerDepth == other.MaximumInnerDepth &&
-            Equals(obj.InnerProperties, other.InnerProperties);
+            obj.Type == other.Type && Equals(obj.InnerProperties, other.InnerProperties);
 
         private bool Equals(IReadOnlyList<ModelStructure>? @this, IReadOnlyList<ModelStructure>? other)
         {
@@ -65,7 +68,7 @@ namespace HeaderDetection.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(DisplayName, NumOfColumns, CurrentDepth, MaximumInnerDepth, InnerProperties);
+            return HashCode.Combine(DisplayName, NumOfColumns, CurrentDepth, MaximumInnerDepth, Type, InnerProperties);
         }
     }
 }
