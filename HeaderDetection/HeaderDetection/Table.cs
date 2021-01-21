@@ -11,7 +11,7 @@ namespace HeaderDetection
         public List<T> Items
         {
             get => _items;
-            set => _items = value ?? new List<T>();
+            protected set => _items = value ?? new List<T>();
         }
 
         public ModelStructure ModelStructure { get; set; }
@@ -33,7 +33,7 @@ namespace HeaderDetection
             Items = items;
             ModelStructure = modelStructure;
         }
-        
+
         public T this[int rowIndex]
         {
             get => Items[rowIndex];

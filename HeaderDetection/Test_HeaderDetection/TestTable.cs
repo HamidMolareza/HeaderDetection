@@ -12,11 +12,8 @@ namespace Test_HeaderDetection
         private readonly Table<ComplexModel> _complexTable = new();
 
         [Fact]
-        public void Items_SetNull_ReturnEmptyList()
+        public void Items_ItemsIsNotNull_ReturnEmptyList()
         {
-            Assert.True(_simpleTable.Items is not null);
-
-            _simpleTable.Items = null!;
             Assert.True(_simpleTable.Items is not null);
         }
 
