@@ -33,6 +33,30 @@ namespace Test_HeaderDetection
             Assert.True(IsEqual(resultHeader, expected));
         }
 
+        [Fact]
+        public void AddHeader_SimpleModelWidthShift_GetHeader()
+        {
+            var resultHeader = new[]
+            {
+                new[] {Empty, Empty, Empty, Empty},
+                new[] {Empty, Empty, Empty, Empty},
+                new[] {Empty, Empty, Empty, Empty},
+            };
+            var exportingService = new ExportService(resultHeader);
+            var exporting = new Exporting(exportingService);
+
+            exporting.AddHeader(Detection.DetectHeader(typeof(SimpleModel)), 1, 1);
+
+            var expected = new[]
+            {
+                new[] {Empty, Empty, Empty, Empty},
+                new[] {Empty, nameof(SimpleModel), MergeRowStr, MergeRowStr},
+                new[] {Empty,nameof(SimpleModel.Integer), nameof(SimpleModel.Str), nameof(SimpleModel.Decimal)}
+            };
+
+            Assert.True(IsEqual(resultHeader, expected));
+        }
+
         private static bool IsEqual<T>(IReadOnlyList<T[]> array1, IReadOnlyList<T[]> array2)
         {
             if (array1.Count != array2.Count)

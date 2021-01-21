@@ -22,9 +22,7 @@ namespace HeaderDetection
             _exportService.MergeRow(beginColumn, beginRow, beginRow + modelStructure.NumOfColumns - 1);
 
             if (modelStructure.InnerProperties is not null)
-            {
                 AddHeader(modelStructure.InnerProperties, beginRow + 1, beginColumn, modelStructure.MaximumInnerDepth);
-            }
         }
 
         private void AddHeader(IEnumerable<ModelStructure> modelStructures, int beginRow, int beginColumn,
