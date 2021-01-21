@@ -4,8 +4,8 @@ namespace HeaderDetection.Interfaces
 {
     public interface IStorage
     {
-        void InsertText(string text, int row, int column);
-        void MergeRow(int row, int beginColumn, int endColumn);
-        void MergeColumn(int column, int beginRow, int endRow);
+        void InsertText(string text, int rowZeroBase, int columnZeroBase);
+        void MergeRow(int rowZeroBase, int beginColumnZeroBase, int endColumnZeroBase);
+        void MergeColumn(int columnZeroBase, int beginRowZeroBase, int endRowZeroBase);
     }
 }

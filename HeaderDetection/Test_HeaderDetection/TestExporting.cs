@@ -129,24 +129,24 @@ namespace Test_HeaderDetection
             _headerStrings = headerStrings;
         }
 
-        public void InsertText(string text, int row, int column)
+        public void InsertText(string text, int rowZeroBase, int columnZeroBase)
         {
-            _headerStrings[row][column] = text;
+            _headerStrings[rowZeroBase][columnZeroBase] = text;
         }
 
-        public void MergeRow(int row, int beginColumn, int endColumn)
+        public void MergeRow(int rowZeroBase, int beginColumnZeroBase, int endColumnZeroBase)
         {
-            for (var i = beginColumn + 1; i <= endColumn; i++)
+            for (var i = beginColumnZeroBase + 1; i <= endColumnZeroBase; i++)
             {
-                _headerStrings[row][i] = "mergeRow";
+                _headerStrings[rowZeroBase][i] = "mergeRow";
             }
         }
 
-        public void MergeColumn(int column, int beginRow, int endRow)
+        public void MergeColumn(int columnZeroBase, int beginRowZeroBase, int endRowZeroBase)
         {
-            for (var i = beginRow + 1; i <= endRow; i++)
+            for (var i = beginRowZeroBase + 1; i <= endRowZeroBase; i++)
             {
-                _headerStrings[i][column] = "mergeColumn";
+                _headerStrings[i][columnZeroBase] = "mergeColumn";
             }
         }
     }

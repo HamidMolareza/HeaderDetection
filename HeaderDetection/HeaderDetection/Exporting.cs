@@ -7,25 +7,25 @@ namespace HeaderDetection
 {
     public static class Exporting
     {
-        public static void AddHeader(IStorage storageService, ModelStructure modelStructure, int beginRow, int beginColumn)
+        public static void AddHeader(IStorage storageService, ModelStructure modelStructure, int beginRowZeroBase, int beginColumnZeroBase)
         {
             if (modelStructure is null) throw new ArgumentNullException(nameof(modelStructure));
 
-            storageService.InsertText(modelStructure.DisplayName, beginRow, beginColumn);
-            storageService.MergeRow(beginColumn, beginRow, beginRow + modelStructure.NumOfColumns - 1);
+            storageService.InsertText(modelStructure.DisplayName, beginRowZeroBase, beginColumnZeroBase);
+            storageService.MergeRow(beginColumnZeroBase, beginRowZeroBase, beginRowZeroBase + modelStructure.NumOfColumns - 1);
 
             if (modelStructure.InnerProperties is not null)
-                AddHeader(storageService, modelStructure.InnerProperties, beginRow + 1, beginColumn, modelStructure.MaximumInnerDepth);
+                AddHeader(storageService, modelStructure.InnerProperties, beginRowZeroBase + 1, beginColumnZeroBase, modelStructure.MaximumInnerDepth);
         }
 
-        private static void AddHeader(IStorage storageService, IEnumerable<ModelStructure> modelStructures, int beginRow, int beginColumn,
+        private static void AddHeader(IStorage storageService, IEnumerable<ModelStructure> modelStructures, int beginRowZeroBase, int beginColumnZeroBase,
             int maximumDepth)
         {
-            var column = beginColumn;
+            var column = beginColumnZeroBase;
 
             foreach (var modelStructure in modelStructures)
             {
-                var row = beginRow;
+                var row = beginRowZeroBase;
                 storageService.InsertText(modelStructure.DisplayName, row, column);
 
                 if (modelStructure.NumOfColumns > 1)
@@ -39,7 +39,7 @@ namespace HeaderDetection
                 }
                 else
                 {
-                    AddHeader(storageService, modelStructure.InnerProperties, beginRow + 1, column, maximumDepth);
+                    AddHeader(storageService, modelStructure.InnerProperties, beginRowZeroBase + 1, column, maximumDepth);
                 }
 
                 column += modelStructure.NumOfColumns;
