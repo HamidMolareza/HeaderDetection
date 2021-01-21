@@ -20,10 +20,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty},
             };
-            var exportingService = new ExportService(resultHeader);
-            var exporting = new Exporting(exportingService);
-
-            exporting.AddHeader(Detection.DetectHeader(typeof(SimpleModel)), 0, 0);
+            
+            var exportingService = new StorageService(resultHeader);
+            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(SimpleModel)), 0, 0);
 
             var expected = new[]
             {
@@ -43,10 +42,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty, Empty},
             };
-            var exportingService = new ExportService(resultHeader);
-            var exporting = new Exporting(exportingService);
-
-            exporting.AddHeader(Detection.DetectHeader(typeof(SimpleModel)), 1, 1);
+            
+            var exportingService = new StorageService(resultHeader);
+            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(SimpleModel)), 1, 1);
 
             var expected = new[]
             {
@@ -68,10 +66,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
             };
-            var exportingService = new ExportService(resultHeader);
-            var exporting = new Exporting(exportingService);
-
-            exporting.AddHeader(Detection.DetectHeader(typeof(ComplexModel)), 0, 0);
+            
+            var exportingService = new StorageService(resultHeader);
+            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(ComplexModel)), 0, 0);
 
             var expected = new[]
             {
@@ -123,11 +120,11 @@ namespace Test_HeaderDetection
         }
     }
 
-    public class ExportService : IExport
+    public class StorageService : IStorage
     {
         private readonly string[][] _headerStrings;
 
-        public ExportService(string[][] headerStrings)
+        public StorageService(string[][] headerStrings)
         {
             _headerStrings = headerStrings;
         }
