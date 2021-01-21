@@ -14,12 +14,22 @@ namespace HeaderDetection
             _exportService = exportService;
         }
 
-        public void AddHeader(IEnumerable<ModelStructure> modelStructures, int beginColumn, int beginRow,
+        public void AddHeader(ModelStructure modelStructure, int beginRow, int beginColumn)
+        {
+            if (modelStructure is null) throw new ArgumentNullException(nameof(modelStructure));
+
+            _exportService.InsertText(modelStructure.DisplayName, beginRow, beginColumn);
+            _exportService.MergeRow(beginColumn, beginRow, beginRow + modelStructure.NumOfColumns - 1);
+
+            if (modelStructure.InnerProperties is not null)
+            {
+                AddHeader(modelStructure.InnerProperties, beginRow + 1, beginColumn, modelStructure.MaximumInnerDepth);
+            }
+        }
+
+        private void AddHeader(IEnumerable<ModelStructure> modelStructures, int beginRow, int beginColumn,
             int maximumDepth)
         {
-            if (modelStructures == null) throw new ArgumentNullException(nameof(modelStructures));
-            if (maximumDepth <= 0) throw new ArgumentOutOfRangeException(nameof(maximumDepth));
-
             var column = beginColumn;
 
             foreach (var modelStructure in modelStructures)
@@ -28,7 +38,7 @@ namespace HeaderDetection
                 _exportService.InsertText(modelStructure.DisplayName, row, column);
 
                 if (modelStructure.NumOfColumns > 1)
-                    _exportService.MergeRow(row, column, modelStructure.NumOfColumns - 1);
+                    _exportService.MergeRow(row, column, column + modelStructure.NumOfColumns - 1);
 
                 if (modelStructure.InnerProperties is null)
                 {
@@ -38,7 +48,7 @@ namespace HeaderDetection
                 }
                 else
                 {
-                    AddHeader(modelStructure.InnerProperties, column, beginRow + 1, maximumDepth);
+                    AddHeader(modelStructure.InnerProperties, beginRow + 1, column, maximumDepth);
                 }
 
                 column += modelStructure.NumOfColumns;
