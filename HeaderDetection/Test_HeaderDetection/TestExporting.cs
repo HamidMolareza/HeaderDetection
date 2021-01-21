@@ -9,6 +9,7 @@ namespace Test_HeaderDetection
     public class TestExporting
     {
         private const string MergeRowStr = "mergeRow";
+        private const string MergeColumnStr = "mergeColumn";
         private const string Empty = "Empty";
 
         [Fact]
@@ -51,7 +52,52 @@ namespace Test_HeaderDetection
             {
                 new[] {Empty, Empty, Empty, Empty},
                 new[] {Empty, nameof(SimpleModel), MergeRowStr, MergeRowStr},
-                new[] {Empty,nameof(SimpleModel.Integer), nameof(SimpleModel.Str), nameof(SimpleModel.Decimal)}
+                new[] {Empty, nameof(SimpleModel.Integer), nameof(SimpleModel.Str), nameof(SimpleModel.Decimal)}
+            };
+
+            Assert.True(IsEqual(resultHeader, expected));
+        }
+
+        [Fact]
+        public void AddHeader_ComplexModel_GetHeader()
+        {
+            var resultHeader = new[]
+            {
+                new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
+                new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
+                new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
+                new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
+            };
+            var exportingService = new ExportService(resultHeader);
+            var exporting = new Exporting(exportingService);
+
+            exporting.AddHeader(Detection.DetectHeader(typeof(ComplexModel)), 0, 0);
+
+            var expected = new[]
+            {
+                new[]
+                {
+                    nameof(ComplexModel), MergeRowStr, MergeRowStr, MergeRowStr, MergeRowStr, MergeRowStr, MergeRowStr,
+                    MergeRowStr
+                },
+                new[]
+                {
+                    nameof(ComplexModel.Guid), nameof(ComplexModel.Simple), MergeRowStr, MergeRowStr,
+                    nameof(ComplexModel.InnerClass), MergeRowStr, MergeRowStr, MergeRowStr
+                },
+                new[]
+                {
+                    MergeColumnStr, nameof(ComplexModel.Simple.Integer), nameof(ComplexModel.Simple.Str),
+                    nameof(ComplexModel.Simple.Decimal),
+                    Empty, Empty, Empty, Empty
+                },
+                new[]
+                {
+                    MergeColumnStr, MergeColumnStr, MergeColumnStr, MergeColumnStr,
+                    nameof(ComplexModel.InnerClassObj.Guid), nameof(ComplexModel.InnerClassObj.Simple.Integer),
+                    nameof(ComplexModel.InnerClassObj.Simple.Str),
+                    nameof(ComplexModel.InnerClassObj.Simple.Decimal)
+                },
             };
 
             Assert.True(IsEqual(resultHeader, expected));
