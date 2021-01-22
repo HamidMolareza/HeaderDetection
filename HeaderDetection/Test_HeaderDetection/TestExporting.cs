@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HeaderDetection;
 using HeaderDetection.Interfaces;
+using HeaderDetection.Models;
 using Test_HeaderDetection.Models;
 using Xunit;
 
@@ -11,6 +13,39 @@ namespace Test_HeaderDetection
         private const string MergeRowStr = "mergeRow";
         private const string MergeColumnStr = "mergeColumn";
         private const string Empty = "Empty";
+        private readonly ModelStructure _simpleModelStructure;
+        private readonly ModelStructure _complexModelStructure;
+
+        public TestExporting()
+        {
+            _simpleModelStructure = Detection.DetectHeader(typeof(SimpleModel));
+            _complexModelStructure = Detection.DetectHeader(typeof(ComplexModel));
+        }
+
+
+        #region AddHeader
+
+        [Fact]
+        public void AddHeader_Null_ThrowArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddHeader(
+                null!, _simpleModelStructure, 0, 0));
+
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddHeader(
+                storageService, null!, 0, 0));
+        }
+
+        [Fact]
+        public void AddHeader_OutOfRangeValue_ThrowArgumentOutOfRangeException()
+        {
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddHeader(
+                storageService, _simpleModelStructure, -1, 0));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddHeader(
+                storageService, _simpleModelStructure, 0, -1));
+        }
 
         [Fact]
         public void AddHeader_SimpleModel_GetHeader()
@@ -20,9 +55,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty},
             };
-            
-            var exportingService = new StorageService(resultHeader);
-            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(SimpleModel)), 0, 0);
+
+            var storageService = new StorageService(resultHeader);
+            Exporting.AddHeader(storageService, _simpleModelStructure, 0, 0);
 
             var expected = new[]
             {
@@ -42,9 +77,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty, Empty},
             };
-            
-            var exportingService = new StorageService(resultHeader);
-            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(SimpleModel)), 1, 1);
+
+            var storageService = new StorageService(resultHeader);
+            Exporting.AddHeader(storageService, _simpleModelStructure, 1, 1);
 
             var expected = new[]
             {
@@ -66,9 +101,9 @@ namespace Test_HeaderDetection
                 new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
                 new[] {Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty},
             };
-            
-            var exportingService = new StorageService(resultHeader);
-            Exporting.AddHeader(exportingService,Detection.DetectHeader(typeof(ComplexModel)), 0, 0);
+
+            var storageService = new StorageService(resultHeader);
+            Exporting.AddHeader(storageService, _complexModelStructure, 0, 0);
 
             var expected = new[]
             {
@@ -99,6 +134,64 @@ namespace Test_HeaderDetection
 
             Assert.True(IsEqual(resultHeader, expected));
         }
+
+        #endregion
+
+        #region AddItem
+
+        [Fact]
+        public void AddItem_Null_ThrowArgumentNullException()
+        {
+            var model = new SimpleModel();
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddItem(model,
+                null!, _simpleModelStructure, 0, 0));
+
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddItem(model,
+                storageService, null!, 0, 0));
+        }
+
+        [Fact]
+        public void AddItem_OutOfRangeValue_ThrowArgumentOutOfRangeException()
+        {
+            var model = new SimpleModel();
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddItem(model,
+                storageService, _simpleModelStructure, -1, 0));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddItem(model,
+                storageService, _simpleModelStructure, 0, -1));
+        }
+
+        #endregion
+
+        #region AddItems
+
+        [Fact]
+        public void AddItems_Null_ThrowArgumentNullException()
+        {
+            var model = new List<SimpleModel>();
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddItems(model,
+                null!, _simpleModelStructure, 0, 0));
+
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentNullException>(() => Exporting.AddItems(model,
+                storageService, null!, 0, 0));
+        }
+
+        [Fact]
+        public void AddItems_OutOfRangeValue_ThrowArgumentOutOfRangeException()
+        {
+            var model = new List<SimpleModel>();
+            var storageService = new StorageService(null!);
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddItems(model,
+                storageService, _simpleModelStructure, -1, 0));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => Exporting.AddItems(model,
+                storageService, _simpleModelStructure, 0, -1));
+        }
+
+        #endregion
 
         private static bool IsEqual<T>(IReadOnlyList<T[]> array1, IReadOnlyList<T[]> array2)
         {
@@ -132,6 +225,11 @@ namespace Test_HeaderDetection
         public void InsertText(string text, int rowZeroBase, int columnZeroBase)
         {
             _headerStrings[rowZeroBase][columnZeroBase] = text;
+        }
+
+        public void Insert(Item item, int rowZeroBase, int columnZeroBase)
+        {
+            _headerStrings[rowZeroBase][columnZeroBase] = item.Value?.ToString();
         }
 
         public void MergeRow(int rowZeroBase, int beginColumnZeroBase, int endColumnZeroBase)

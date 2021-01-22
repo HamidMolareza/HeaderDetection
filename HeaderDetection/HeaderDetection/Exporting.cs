@@ -4,6 +4,7 @@ using HeaderDetection.Interfaces;
 using HeaderDetection.Models;
 
 //TODO: Read
+//TODO: Add XML
 
 namespace HeaderDetection
 {
@@ -12,7 +13,10 @@ namespace HeaderDetection
         public static void AddHeader(IStorage storageService, ModelStructure modelStructure, int beginRowZeroBase,
             int beginColumnZeroBase)
         {
+            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
             if (modelStructure is null) throw new ArgumentNullException(nameof(modelStructure));
+            if (beginRowZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginRowZeroBase));
+            if (beginColumnZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginColumnZeroBase));
 
             storageService.InsertText(modelStructure.DisplayName, beginRowZeroBase, beginColumnZeroBase);
             storageService.MergeRow(beginColumnZeroBase, beginRowZeroBase,
@@ -53,56 +57,35 @@ namespace HeaderDetection
             }
         }
 
-        public static void AddItem<T>(T model, ModelStructure modelStructure, IStorage storageService,
+        public static void AddItem<T>(T model, IStorage storageService, ModelStructure modelStructure,
             int beginRowZeroBase, int beginColumnZeroBase)
         {
+            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
+            if (modelStructure is null) throw new ArgumentNullException(nameof(modelStructure));
+            if (beginRowZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginRowZeroBase));
+            if (beginColumnZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginColumnZeroBase));
+
             var column = beginColumnZeroBase;
-            foreach (var item in GetItems(model, modelStructure))
+            foreach (var item in Extensions.GetItems(model, modelStructure))
             {
                 storageService.Insert(item, beginRowZeroBase, column);
                 column++;
             }
         }
 
-        public static void AddItems<T>(IEnumerable<T> items, ModelStructure modelStructure, IStorage storageService,
+        public static void AddItems<T>(IEnumerable<T> items, IStorage storageService, ModelStructure modelStructure,
             int beginRowZeroBase, int beginColumnZeroBase)
         {
+            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
+            if (modelStructure is null) throw new ArgumentNullException(nameof(modelStructure));
+            if (beginRowZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginRowZeroBase));
+            if (beginColumnZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginColumnZeroBase));
+
             var row = beginRowZeroBase;
             foreach (var item in items)
             {
-                AddItem(item, modelStructure, storageService, row, beginColumnZeroBase);
+                AddItem(item, storageService, modelStructure, row, beginColumnZeroBase);
                 row++;
-            }
-        }
-
-        public static IEnumerable<Item> GetItems<T>(T model, ModelStructure modelStructure)
-        {
-            if (modelStructure.MaximumInnerDepth == 0)
-                yield return new Item(modelStructure.DisplayName, model, modelStructure.Type);
-
-            foreach (var item in GetItems(model, modelStructure.InnerProperties!))
-                yield return item;
-        }
-
-        private static IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
-        {
-            foreach (var modelStructure in modelStructures)
-            {
-                object? propertyValue = null;
-                if (value is not null)
-                    propertyValue = value.GetType().GetProperty(modelStructure.DisplayName)!.GetValue(value);
-
-                if (modelStructure.InnerProperties is null)
-                {
-                    yield return new Item(modelStructure.DisplayName, propertyValue, modelStructure.Type);
-                }
-                else
-                {
-                    foreach (var item in GetItems(propertyValue, modelStructure.InnerProperties))
-                    {
-                        yield return item;
-                    }
-                }
             }
         }
     }
