@@ -38,5 +38,36 @@ namespace HeaderDetection
                 }
             }
         }
+
+        public static IEnumerable<Item> GetItems<T>(T model, ModelStructure modelStructure)
+        {
+            if (modelStructure.MaximumInnerDepth == 0)
+                yield return new Item(modelStructure.DisplayName, model, modelStructure.Type);
+
+            foreach (var item in GetItems(model, modelStructure.InnerProperties!))
+                yield return item;
+        }
+
+        private static IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
+        {
+            foreach (var modelStructure in modelStructures)
+            {
+                object? propertyValue = null;
+                if (value is not null)
+                    propertyValue = value.GetType().GetProperty(modelStructure.DisplayName)!.GetValue(value);
+
+                if (modelStructure.InnerProperties is null)
+                {
+                    yield return new Item(modelStructure.DisplayName, propertyValue, modelStructure.Type);
+                }
+                else
+                {
+                    foreach (var item in GetItems(propertyValue, modelStructure.InnerProperties))
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
     }
 }
