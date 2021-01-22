@@ -16,14 +16,14 @@ namespace HeaderDetection
             if (!IsValidType(type))
                 throw new ArgumentException($"Type is not valid. ({type.Name} - {type})");
 
-            var name = GetPropertyName(type);
+            var name = GetDisplayName(type);
             if (!HasInnerModel(type))
-                return new ModelStructure(name, 1, 0, 0, null, type);
+                return new ModelStructure(name, 1, 0, 0, null, type, type.Name);
 
             var outerTypes = new List<Type> {type};
             var innerStructure = GetHeaderStructures(type, 1, outerTypes).ToList();
             var (numOfColumns, depth) = GetDepthAndColumns(innerStructure);
-            return new ModelStructure(name, numOfColumns, 0, depth, innerStructure, type);
+            return new ModelStructure(name, numOfColumns, 0, depth, innerStructure, type, type.Name);
         }
 
         private static IEnumerable<ModelStructure> GetHeaderStructures(Type type, int depth, List<Type> outerTypes) =>
@@ -37,9 +37,9 @@ namespace HeaderDetection
                 throw new ArgumentException($"Recursive detected. Type: {property.PropertyType.FullName}",
                     property.Name);
 
-            var name = GetPropertyName(property);
+            var name = GetDisplayName(property);
             if (!HasInnerModel(property.PropertyType))
-                return new ModelStructure(name, 1, currentDepth, 0, null, property.PropertyType);
+                return new ModelStructure(name, 1, currentDepth, 0, null, property.PropertyType, property.Name);
 
             outerTypes.Add(property.PropertyType);
             var innerStructure = GetHeaderStructures(
@@ -47,10 +47,10 @@ namespace HeaderDetection
             var (numOfColumns, maximumInnerDepth) = GetDepthAndColumns(innerStructure);
             outerTypes.Remove(property.PropertyType);
             return new ModelStructure(name, numOfColumns, currentDepth, maximumInnerDepth, innerStructure,
-                property.PropertyType);
+                property.PropertyType, property.Name);
         }
 
-        private static string GetPropertyName(MemberInfo property)
+        private static string GetDisplayName(MemberInfo property)
         {
             var displayAttribute = property.GetCustomAttributes(typeof(DisplayNameAttribute)).FirstOrDefault();
             if (displayAttribute is null)

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using HeaderDetection;
-using HeaderDetection.Interfaces;
 using HeaderDetection.Models;
 using Test_HeaderDetection.Models;
+using Test_HeaderDetection.Services;
 using Xunit;
 
 namespace Test_HeaderDetection
@@ -15,11 +15,13 @@ namespace Test_HeaderDetection
         private const string Empty = "Empty";
         private readonly ModelStructure _simpleModelStructure;
         private readonly ModelStructure _complexModelStructure;
+        private readonly ModelStructure _displayNameStructure;
 
         public TestExporting()
         {
             _simpleModelStructure = Detection.DetectHeader(typeof(SimpleModel));
             _complexModelStructure = Detection.DetectHeader(typeof(ComplexModel));
+            _displayNameStructure = Detection.DetectHeader(typeof(DisplayNameModel));
         }
 
 
@@ -63,6 +65,27 @@ namespace Test_HeaderDetection
             {
                 new[] {nameof(SimpleModel), MergeRowStr, MergeRowStr},
                 new[] {nameof(SimpleModel.Integer), nameof(SimpleModel.Str), nameof(SimpleModel.Decimal)}
+            };
+
+            Assert.True(IsEqual(resultHeader, expected));
+        }
+
+        [Fact]
+        public void AddHeader_DisplayNameModel_GetHeader()
+        {
+            var resultHeader = new[]
+            {
+                new[] {Empty},
+                new[] {Empty},
+            };
+
+            var storageService = new StorageService(resultHeader);
+            Exporting.AddHeader(storageService, _displayNameStructure, 0, 0);
+
+            var expected = new[]
+            {
+                new[] {"main"},
+                new[] {"Inner Property"}
             };
 
             Assert.True(IsEqual(resultHeader, expected));
@@ -115,18 +138,18 @@ namespace Test_HeaderDetection
                 new[]
                 {
                     nameof(ComplexModel.Guid), nameof(ComplexModel.Simple), MergeRowStr, MergeRowStr,
-                    nameof(ComplexModel.InnerClass), MergeRowStr, MergeRowStr, MergeRowStr
+                    nameof(ComplexModel.InnerClassObj), MergeRowStr, MergeRowStr, MergeRowStr
                 },
                 new[]
                 {
                     MergeColumnStr, nameof(ComplexModel.Simple.Integer), nameof(ComplexModel.Simple.Str),
                     nameof(ComplexModel.Simple.Decimal),
-                    Empty, Empty, Empty, Empty
+                    nameof(ComplexModel.InnerClassObj.Guid), nameof(ComplexModel.InnerClassObj.Simple), MergeRowStr, MergeRowStr
                 },
                 new[]
                 {
                     MergeColumnStr, MergeColumnStr, MergeColumnStr, MergeColumnStr,
-                    nameof(ComplexModel.InnerClassObj.Guid), nameof(ComplexModel.InnerClassObj.Simple.Integer),
+                    MergeColumnStr, nameof(ComplexModel.InnerClassObj.Simple.Integer),
                     nameof(ComplexModel.InnerClassObj.Simple.Str),
                     nameof(ComplexModel.InnerClassObj.Simple.Decimal)
                 },
@@ -163,6 +186,26 @@ namespace Test_HeaderDetection
                 storageService, _simpleModelStructure, 0, -1));
         }
 
+        [Fact]
+        public void AddItem_DisplayNameModel_GetHeader()
+        {
+            var model = new DisplayNameModel {Property = "value"};
+            var result = new[]
+            {
+                new[] {Empty}
+            };
+            var storageService = new StorageService(result);
+
+            Exporting.AddItem(model, storageService, _displayNameStructure, 0, 0);
+
+            var expected = new[]
+            {
+                new[] {"value"},
+            };
+
+            Assert.True(IsEqual(result, expected));
+        }
+
         #endregion
 
         #region AddItems
@@ -191,6 +234,29 @@ namespace Test_HeaderDetection
                 storageService, _simpleModelStructure, 0, -1));
         }
 
+        [Fact]
+        public void AddItems_DisplayNameModel_GetHeader()
+        {
+            var model = new DisplayNameModel {Property = "value"};
+            var list = new List<DisplayNameModel> {model, model};
+            var result = new[]
+            {
+                new[] {Empty},
+                new[] {Empty},
+            };
+            var storageService = new StorageService(result);
+
+            Exporting.AddItems(list, storageService, _displayNameStructure, 0, 0);
+
+            var expected = new[]
+            {
+                new[] {"value"},
+                new[] {"value"},
+            };
+
+            Assert.True(IsEqual(result, expected));
+        }
+
         #endregion
 
         private static bool IsEqual<T>(IReadOnlyList<T[]> array1, IReadOnlyList<T[]> array2)
@@ -198,54 +264,19 @@ namespace Test_HeaderDetection
             if (array1.Count != array2.Count)
                 return false;
 
-            for (var i = 0; i < array1.Count; i++)
+            for (var r = 0; r < array1.Count; r++)
             {
-                if (array1[i].Length != array2[i].Length)
+                if (array1[r].Length != array2[r].Length)
                     return false;
-                for (var j = 0; j < array1.Count; j++)
+
+                for (var c = 0; c < array1[r].Length; c++)
                 {
-                    if (!array1[i][j].Equals(array2[i][j]))
+                    if (!array1[r][c].Equals(array2[r][c]))
                         return false;
                 }
             }
 
             return true;
-        }
-    }
-
-    public class StorageService : IStorage
-    {
-        private readonly string[][] _headerStrings;
-
-        public StorageService(string[][] headerStrings)
-        {
-            _headerStrings = headerStrings;
-        }
-
-        public void InsertText(string text, int rowZeroBase, int columnZeroBase)
-        {
-            _headerStrings[rowZeroBase][columnZeroBase] = text;
-        }
-
-        public void Insert(Item item, int rowZeroBase, int columnZeroBase)
-        {
-            _headerStrings[rowZeroBase][columnZeroBase] = item.Value?.ToString();
-        }
-
-        public void MergeRow(int rowZeroBase, int beginColumnZeroBase, int endColumnZeroBase)
-        {
-            for (var i = beginColumnZeroBase + 1; i <= endColumnZeroBase; i++)
-            {
-                _headerStrings[rowZeroBase][i] = "mergeRow";
-            }
-        }
-
-        public void MergeColumn(int columnZeroBase, int beginRowZeroBase, int endRowZeroBase)
-        {
-            for (var i = beginRowZeroBase + 1; i <= endRowZeroBase; i++)
-            {
-                _headerStrings[i][columnZeroBase] = "mergeColumn";
-            }
         }
     }
 }

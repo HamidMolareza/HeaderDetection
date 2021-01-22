@@ -9,7 +9,7 @@ namespace Test_HeaderDetection.TestModels
     {
         private const int ValidColumns = 1;
         private const int ValidCurrentDepth = 0;
-        private const string ValidDisplayName = "valid";
+        private const string ValidName = "valid";
 
         [Theory]
         [InlineData(null)]
@@ -19,7 +19,18 @@ namespace Test_HeaderDetection.TestModels
         {
             Assert.Throws<ArgumentException>(
                 () => new ModelStructure(displayName, ValidColumns, ValidCurrentDepth,
-                    0, null, typeof(int)));
+                    0, null, typeof(int), ValidName));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void Constructor_InvalidOriginalName_ThrowArgumentException(string originalName)
+        {
+            Assert.Throws<ArgumentException>(
+                () => new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth,
+                    0, null, typeof(int), originalName));
         }
 
         [Theory]
@@ -30,54 +41,57 @@ namespace Test_HeaderDetection.TestModels
             int maximumInnerDepth)
         {
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => new ModelStructure(ValidDisplayName, numOfColumns, currentDepth,
-                    maximumInnerDepth, null, typeof(int)));
+                () => new ModelStructure(ValidName, numOfColumns, currentDepth,
+                    maximumInnerDepth, null, typeof(int), ValidName));
         }
 
         [Fact]
         public void Constructor_InnerPropertiesAndOutOfRange_ThrowOutOfRangeException()
         {
             Assert.Throws<ArgumentOutOfRangeException>(
-                () => new ModelStructure("valid name", ValidColumns, ValidCurrentDepth, 0,
+                () => new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 0,
                     new List<ModelStructure>
                     {
-                        new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int))
-                    }, typeof(int)));
+                        new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName)
+                    }, typeof(int), ValidName));
         }
 
         [Fact]
         public void Constructor_EmptyInnerProperties_ThrowArgumentException()
         {
             Assert.Throws<ArgumentException>(
-                () => new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 1,
-                    new List<ModelStructure>(), typeof(int)));
+                () => new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 1,
+                    new List<ModelStructure>(), typeof(int), ValidName));
         }
 
         [Fact]
         public void Constructor_ValidInputs_CreateObject()
         {
-            var obj = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int));
+            var obj = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName);
             Assert.IsType<ModelStructure>(obj);
         }
 
         [Fact]
         public void Equals_SimpleEqualObjects_ReturnTrue()
         {
-            var obj1 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int));
-            var obj2 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int));
+            var obj1 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName);
+            var obj2 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName);
             Assert.True(Equals(obj1, obj2));
         }
 
         [Fact]
         public void Equals_SimpleNotEqualObjects_ReturnTrue()
         {
-            var obj1 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int));
-            var obj2 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 1, null, typeof(int));
-            var obj3 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth + 1, 0, null, typeof(int));
-            var obj4 = new ModelStructure(ValidDisplayName, ValidColumns + 1, ValidCurrentDepth, 0, null, typeof(int));
-            var obj5 = new ModelStructure(ValidDisplayName + "a", ValidColumns, ValidCurrentDepth, 0, null, typeof(int));
-            var obj6 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 1,
-                new List<ModelStructure> {obj1}, typeof(int));
+            var obj1 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName);
+            var obj2 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 1, null, typeof(int), ValidName);
+            var obj3 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth + 1, 0, null, typeof(int),
+                ValidName);
+            var obj4 = new ModelStructure(ValidName, ValidColumns + 1, ValidCurrentDepth, 0, null, typeof(int),
+                ValidName);
+            var obj5 = new ModelStructure(ValidName + "a", ValidColumns, ValidCurrentDepth, 0, null, typeof(int),
+                ValidName);
+            var obj6 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 1,
+                new List<ModelStructure> {obj1}, typeof(int), ValidName);
 
             Assert.False(Equals(obj1, obj2));
             Assert.False(Equals(obj1, obj3));
@@ -96,35 +110,35 @@ namespace Test_HeaderDetection.TestModels
         }
 
         private static ModelStructure GenerateComplexModel() =>
-            new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 2,
+            new(ValidName, ValidColumns, ValidCurrentDepth, 2,
                 new List<ModelStructure>
                 {
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 1,
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 1,
                         new List<ModelStructure>
                         {
-                            new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                            new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                        }, typeof(int)),
-                }, typeof(int));
+                            new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                            new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                        }, typeof(int), ValidName),
+                }, typeof(int), ValidName);
 
         [Fact]
         public void Equals_ComplexNotEqualObjects_ReturnTrue()
         {
             var obj1 = GenerateComplexModel();
-            var obj2 = new ModelStructure(ValidDisplayName, ValidColumns, ValidCurrentDepth, 2,
+            var obj2 = new ModelStructure(ValidName, ValidColumns, ValidCurrentDepth, 2,
                 new List<ModelStructure>
                 {
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                    new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 1,
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                    new(ValidName, ValidColumns, ValidCurrentDepth, 1,
                         new List<ModelStructure>
                         {
-                            new(ValidDisplayName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int)),
-                            new(ValidDisplayName, ValidColumns + 5, ValidCurrentDepth, 0, null, typeof(int)),
-                        }, typeof(int)),
-                }, typeof(int));
+                            new(ValidName, ValidColumns, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                            new(ValidName, ValidColumns + 5, ValidCurrentDepth, 0, null, typeof(int), ValidName),
+                        }, typeof(int), ValidName),
+                }, typeof(int), ValidName);
 
             Assert.False(Equals(obj1, obj2));
         }

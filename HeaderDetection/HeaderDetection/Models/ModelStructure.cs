@@ -7,10 +7,12 @@ namespace HeaderDetection.Models
     public class ModelStructure
     {
         public ModelStructure(string displayName, int numOfColumns, int currentDepth, int maximumInnerDepth,
-            List<ModelStructure>? innerProperties, Type type)
+            List<ModelStructure>? innerProperties, Type type, string originalName)
         {
             if (string.IsNullOrWhiteSpace(displayName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
+            if (string.IsNullOrWhiteSpace(originalName))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(originalName));
             if (numOfColumns < 1)
                 throw new ArgumentOutOfRangeException($"Value can not be less than 1. {nameof(numOfColumns)}");
             if (currentDepth < 0)
@@ -29,22 +31,25 @@ namespace HeaderDetection.Models
             MaximumInnerDepth = maximumInnerDepth;
             InnerProperties = innerProperties;
             Type = type ?? throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
+            OriginalName = originalName;
         }
 
+        public string OriginalName { get; }
         public string DisplayName { get; }
         public int NumOfColumns { get; }
         public int CurrentDepth { get; }
         public int MaximumInnerDepth { get; }
         public Type Type { get; }
         public List<ModelStructure>? InnerProperties { get; }
-
+        
         public override bool Equals(object? obj) =>
             obj is ModelStructure otherObj && Equals(this, otherObj);
 
         private bool Equals(ModelStructure obj, ModelStructure other) =>
             obj.DisplayName == other.DisplayName && obj.NumOfColumns == other.NumOfColumns &&
             obj.CurrentDepth == other.CurrentDepth && obj.MaximumInnerDepth == other.MaximumInnerDepth &&
-            obj.Type == other.Type && Equals(obj.InnerProperties, other.InnerProperties);
+            obj.Type == other.Type && obj.OriginalName == other.OriginalName &&
+            Equals(obj.InnerProperties, other.InnerProperties);
 
         private bool Equals(IReadOnlyList<ModelStructure>? @this, IReadOnlyList<ModelStructure>? other)
         {
@@ -67,7 +72,7 @@ namespace HeaderDetection.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(DisplayName, NumOfColumns, CurrentDepth, MaximumInnerDepth, Type, InnerProperties);
+            return HashCode.Combine(DisplayName, NumOfColumns, CurrentDepth, MaximumInnerDepth, Type, InnerProperties, OriginalName);
         }
     }
 }

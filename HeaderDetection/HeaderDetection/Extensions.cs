@@ -64,7 +64,7 @@ namespace HeaderDetection
             {
                 object? propertyValue = null;
                 if (value is not null)
-                    propertyValue = value.GetType().GetProperty(modelStructure.DisplayName)!.GetValue(value);
+                    propertyValue = value.GetType().GetProperty(modelStructure.OriginalName)!.GetValue(value);
 
                 if (modelStructure.InnerProperties is null)
                 {
@@ -79,5 +79,6 @@ namespace HeaderDetection
                 }
             }
         }
+        
     }
 }

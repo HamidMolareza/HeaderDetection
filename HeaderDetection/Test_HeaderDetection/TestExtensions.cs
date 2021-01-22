@@ -12,11 +12,13 @@ namespace Test_HeaderDetection
     {
         private readonly ModelStructure _simpleModel;
         private readonly ModelStructure _complexModel;
+        private readonly ModelStructure _displayNameModel;
 
         public TestExtensions()
         {
             _simpleModel = Detection.DetectHeader(typeof(SimpleModel));
             _complexModel = Detection.DetectHeader(typeof(ComplexModel));
+            _displayNameModel = Detection.DetectHeader(typeof(DisplayNameModel));
         }
 
         #region GetHeader
@@ -48,6 +50,16 @@ namespace Test_HeaderDetection
                 Assert.True(modelStructure.CurrentDepth == 1);
         }
 
+        [Fact]
+        public void GetHeader_ValidIndexDisplayName_ReturnModel()
+        {
+            var result = _displayNameModel.GetHeader(0).ToList();
+            Assert.True(result.Count == 1);
+
+            foreach (var modelStructure in result)
+                Assert.True(modelStructure.CurrentDepth == 0);
+        }
+
         #endregion
 
         #region GetItems
@@ -71,6 +83,17 @@ namespace Test_HeaderDetection
 
             var result = _simpleModel.GetItems(simpleModel).ToList();
             Assert.True(IsSimpleModelValid(simpleModel, result));
+        }
+
+        [Fact]
+        public void GetItems_DisplayNameModel_ReturnItems()
+        {
+            var simpleModel = new DisplayNameModel {Property = "value"};
+
+            var result = _displayNameModel.GetItems(simpleModel).ToList();
+            Assert.True(result.Count == _displayNameModel.NumOfColumns &&
+                        result[0].Name == "Inner Property" && result[0].Type == typeof(string) &&
+                        (string) result[0].Value == "value");
         }
 
         [Fact]

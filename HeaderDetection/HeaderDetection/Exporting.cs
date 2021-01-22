@@ -19,8 +19,10 @@ namespace HeaderDetection
             if (beginColumnZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginColumnZeroBase));
 
             storageService.InsertText(modelStructure.DisplayName, beginRowZeroBase, beginColumnZeroBase);
-            storageService.MergeRow(beginColumnZeroBase, beginRowZeroBase,
-                beginRowZeroBase + modelStructure.NumOfColumns - 1);
+
+            if (modelStructure.NumOfColumns > 1)
+                storageService.MergeRow(beginColumnZeroBase, beginRowZeroBase,
+                    beginRowZeroBase + modelStructure.NumOfColumns - 1);
 
             if (modelStructure.InnerProperties is not null)
                 AddHeader(storageService, modelStructure.InnerProperties, beginRowZeroBase + 1, beginColumnZeroBase,
