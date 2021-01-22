@@ -1,32 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HeaderDetection
 {
     public static class Utility
     {
-        public static string ConvertIndexToName(int index)
+        public static string ConvertIndexToName(int indexZeroBase)
         {
+            if (indexZeroBase < 0)
+                throw new ArgumentOutOfRangeException(nameof(indexZeroBase), "Value Can not be less than 0.");
+
             var name = "";
-            while (index > 0)
+            while (indexZeroBase > 0)
             {
                 // Find remainder
-                var rem = index % 26;
+                var rem = indexZeroBase % 26;
 
                 // If remainder is 0, then a
                 // 'Z' must be there in output
                 if (rem == 0)
                 {
                     name += "Z";
-                    index = (index / 26) - 1;
+                    indexZeroBase = (indexZeroBase / 26) - 1;
                 }
 
                 // If remainder is non-zero
                 else
                 {
                     name += (char) (rem - 1 + 'A');
-                    index /= 26;
+                    indexZeroBase /= 26;
                 }
             }
 
@@ -45,6 +49,8 @@ namespace HeaderDetection
 
         public static int ConvertNameToIndex(string name)
         {
+            name = NameMustValid(name);
+
             var sum = 0;
             for (var i = 0; i < name.Length; i++)
             {
@@ -55,8 +61,26 @@ namespace HeaderDetection
             return sum;
         }
 
+        private static string NameMustValid(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            name = name.ToUpper();
+            if (!IsNameValid(name))
+                throw new ArgumentOutOfRangeException(nameof(name), "Characters must be A-Z.");
+            return name;
+        }
+
+        public static bool IsNameValid(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            return name.ToUpper().All(c => c >= 'A' && c <= 'Z');
+        }
+
         public static string GetNextName(string name)
         {
+            name = NameMustValid(name);
+
             var sb = new StringBuilder(name);
             for (var i = name.Length - 1; i >= 0; i--)
             {
@@ -75,6 +99,10 @@ namespace HeaderDetection
 
         public static string GetNextName(string currentName, int count)
         {
+            currentName = NameMustValid(currentName);
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Value can not be less than 0.");
+            
             var resultName = currentName;
 
             for (var i = 0; i < count; i++)
@@ -83,12 +111,16 @@ namespace HeaderDetection
             return resultName;
         }
 
-        public static string[] GetNexNames(string currentName, int count)
+        public static string[] GetNexNames(string currentName, int howMany)
         {
-            var resultNames = new List<string>(count);
+            if (howMany < 0)
+                throw new ArgumentOutOfRangeException(nameof(howMany), "Value can not be less than 0.");
+            currentName = NameMustValid(currentName);
+
+            var resultNames = new List<string>(howMany);
             var name = currentName;
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < howMany; i++)
             {
                 name = GetNextName(name);
                 resultNames.Add(name);

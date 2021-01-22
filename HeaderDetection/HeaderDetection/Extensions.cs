@@ -6,16 +6,16 @@ namespace HeaderDetection
 {
     public static class Extensions
     {
-        public static IEnumerable<ModelStructure> GetHeader(this ModelStructure modelStructure, int rowIndex)
+        public static IEnumerable<ModelStructure> GetHeader(this ModelStructure modelStructure, int depthIndex)
         {
-            if (rowIndex < 0 || rowIndex > modelStructure.MaximumInnerDepth)
+            if (depthIndex < 0 || depthIndex > modelStructure.MaximumInnerDepth)
                 throw new ArgumentException(
-                    $"Value can not less than 0 or more than {modelStructure.MaximumInnerDepth}. (input: {rowIndex}");
+                    $"Value can not less than 0 or more than {modelStructure.MaximumInnerDepth}. (input: {depthIndex}");
 
-            if (rowIndex == 0)
+            if (depthIndex == 0)
                 yield return modelStructure;
 
-            foreach (var model in GetHeader(rowIndex, modelStructure.InnerProperties!))
+            foreach (var model in GetHeader(depthIndex, modelStructure.InnerProperties!))
                 yield return model;
         }
 
