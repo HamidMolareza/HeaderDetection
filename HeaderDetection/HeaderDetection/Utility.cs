@@ -66,12 +66,12 @@ namespace HeaderDetection
             if (name == null) throw new ArgumentNullException(nameof(name));
 
             name = name.ToUpper();
-            if (!IsNameValid(name))
+            if (!IsValidName(name))
                 throw new ArgumentOutOfRangeException(nameof(name), "Characters must be A-Z.");
             return name;
         }
 
-        public static bool IsNameValid(string name)
+        public static bool IsValidName(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             return name.ToUpper().All(c => c >= 'A' && c <= 'Z');
@@ -128,5 +128,9 @@ namespace HeaderDetection
 
             return resultNames.ToArray();
         }
+        
+        public static bool IsList(Type type) => type.IsGenericType && (
+            type.GetGenericTypeDefinition() == typeof(List<>)
+            || type.GetGenericTypeDefinition() == typeof(IList<>));
     }
 }

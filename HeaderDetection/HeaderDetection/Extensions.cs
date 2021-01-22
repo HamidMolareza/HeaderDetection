@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HeaderDetection.Models;
 
 namespace HeaderDetection
@@ -39,14 +40,23 @@ namespace HeaderDetection
             }
         }
 
-        public static IEnumerable<Item> GetItems<T>(T model, ModelStructure modelStructure)
+        public static IEnumerable<Item> GetItems<T>(this ModelStructure modelStructure, T model)
         {
+            if (typeof(T) != modelStructure.Type)
+            {
+                throw new ArgumentException(
+                    $"Type of model and structure are not same. ({typeof(T)} != {modelStructure.Type})");
+            }
+
             if (modelStructure.MaximumInnerDepth == 0)
                 yield return new Item(modelStructure.DisplayName, model, modelStructure.Type);
 
             foreach (var item in GetItems(model, modelStructure.InnerProperties!))
                 yield return item;
         }
+
+        public static IEnumerable<Item> GetItems<T>(this ModelStructure modelStructure, IEnumerable<T> models) =>
+            models.SelectMany(modelStructure.GetItems);
 
         private static IEnumerable<Item> GetItems(object? value, IEnumerable<ModelStructure> modelStructures)
         {

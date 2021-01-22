@@ -66,7 +66,7 @@ namespace HeaderDetection
             if (beginColumnZeroBase < 0) throw new ArgumentOutOfRangeException(nameof(beginColumnZeroBase));
 
             var column = beginColumnZeroBase;
-            foreach (var item in Extensions.GetItems(model, modelStructure))
+            foreach (var item in modelStructure.GetItems(model))
             {
                 storageService.Insert(item, beginRowZeroBase, column);
                 column++;

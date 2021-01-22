@@ -87,11 +87,7 @@ namespace HeaderDetection
             return (sum, maximumInnerDepth);
         }
 
-        public static bool IsValidType(Type type) => !type.IsArray && !IsList(type);
-
-        private static bool IsList(Type type) => type.IsGenericType && (
-            type.GetGenericTypeDefinition() == typeof(List<>)
-            || type.GetGenericTypeDefinition() == typeof(IList<>));
+        public static bool IsValidType(Type type) => !type.IsArray && !Utility.IsList(type);
 
         private static bool HasInnerModel(Type type)
         {

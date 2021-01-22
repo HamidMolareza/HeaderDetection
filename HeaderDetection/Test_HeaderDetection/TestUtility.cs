@@ -47,13 +47,13 @@ namespace Test_HeaderDetection
         [Fact]
         public void IsNameValid_Null_ThrowArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => Utility.IsNameValid(null!));
+            Assert.Throws<ArgumentNullException>(() => Utility.IsValidName(null!));
         }
 
         [Fact]
         public void IsNameValid_ValidLowercaseName_ReturnTrue()
         {
-            var isValid = Utility.IsNameValid("a");
+            var isValid = Utility.IsValidName("a");
             Assert.True(isValid);
         }
 
@@ -62,7 +62,7 @@ namespace Test_HeaderDetection
         [InlineData("Z%Z")]
         public void IsNameValid_InvalidName_ReturnFalse(string name)
         {
-            Assert.False(Utility.IsNameValid(name));
+            Assert.False(Utility.IsValidName(name));
         }
 
         #endregion
