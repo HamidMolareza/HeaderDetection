@@ -11,6 +11,12 @@ namespace Test_HeaderDetection
     public class TestDetection
     {
         [Fact]
+        public void DetectHeader_Null_ThrowArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Detection.DetectHeader(null!));
+        }
+        
+        [Fact]
         public void DetectHeader_InvalidInput_ThrowArgumentException()
         {
             var obj1 = new List<string>();

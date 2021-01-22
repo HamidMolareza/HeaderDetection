@@ -11,6 +11,8 @@ namespace HeaderDetection
     {
         public static ModelStructure DetectHeader(Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             if (!IsValidType(type))
                 throw new ArgumentException($"Type is not valid. ({type.Name} - {type})");
 
@@ -87,7 +89,12 @@ namespace HeaderDetection
             return (sum, maximumInnerDepth);
         }
 
-        public static bool IsValidType(Type type) => !type.IsArray && !Utility.IsList(type);
+        public static bool IsValidType(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return !type.IsArray && !Utility.IsList(type);
+        }
 
         private static bool HasInnerModel(Type type)
         {
